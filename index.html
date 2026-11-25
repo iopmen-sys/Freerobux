@@ -105,7 +105,6 @@
 
     .layer { display: none; position: fixed; inset: 0; overflow: hidden; }
 
-    /* Красный экран с кодом */
     #red-layer { background: #180000; z-index: 500; }
     #code-dump {
       position: absolute; inset: 0; padding: 10px;
@@ -143,9 +142,8 @@
     .mini-err-top { background: linear-gradient(90deg, #8a0000, #ff1a1a); color: #fff; padding: 4px 8px; font-weight: bold; }
     .mini-err-body { padding: 10px; font-weight: bold; }
 
-    /* СТРАШНЫЙ СКРИМЕР НА ВЕСЬ ЭКРАН */
     #screamer-layer {
-      background: #030303;
+      background: #020202;
       z-index: 9500;
       align-items: center;
       justify-content: center;
@@ -153,26 +151,17 @@
     }
 
     @keyframes scareViolent {
-      0% { transform: scale(1.05) translate(0px, 0px) rotate(0deg); filter: contrast(150%) brightness(100%); }
-      20% { transform: scale(1.22) translate(-14px, 10px) rotate(-3deg); filter: contrast(220%) brightness(130%); }
-      40% { transform: scale(1.15) translate(16px, -12px) rotate(3deg); filter: invert(1) contrast(200%); }
-      60% { transform: scale(1.28) translate(-10px, -14px) rotate(-2deg); filter: contrast(200%) brightness(120%); }
-      80% { transform: scale(1.18) translate(14px, 12px) rotate(4deg); filter: contrast(250%) brightness(90%); }
-      100% { transform: scale(1.08) translate(0px, 0px) rotate(0deg); filter: contrast(160%); }
+      0% { transform: scale(1.06) translate(0px, 0px) rotate(0deg); filter: contrast(150%) brightness(105%); }
+      20% { transform: scale(1.24) translate(-15px, 11px) rotate(-3deg); filter: contrast(230%) brightness(135%); }
+      40% { transform: scale(1.16) translate(17px, -12px) rotate(3deg); filter: invert(1) contrast(210%); }
+      60% { transform: scale(1.3) translate(-11px, -14px) rotate(-2deg); filter: contrast(210%) brightness(125%); }
+      80% { transform: scale(1.2) translate(15px, 12px) rotate(4deg); filter: contrast(260%) brightness(95%); }
+      100% { transform: scale(1.08) translate(0px, 0px) rotate(0deg); filter: contrast(165%); }
     }
 
-    #screamer-media {
+    #scareCanvas {
       width: 100vw;
       height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #screamer-media img {
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
       display: block;
     }
 
@@ -218,11 +207,8 @@
     <div id="err-big">ERROR</div>
   </div>
 
-  <!-- СКРИМЕР С КАРТИНКОЙ scare.jpg -->
   <div class="layer" id="screamer-layer">
-    <div id="screamer-media">
-      <img src="scare.jpg" alt="" />
-    </div>
+    <canvas id="scareCanvas"></canvas>
   </div>
 
   <div class="layer" id="net-layer">
@@ -255,6 +241,7 @@
     const redLayer = document.getElementById("red-layer");
     const codeDump = document.getElementById("code-dump");
     const screamerLayer = document.getElementById("screamer-layer");
+    const scareCanvas = document.getElementById("scareCanvas");
     const netLayer = document.getElementById("net-layer");
     const bsodLayer = document.getElementById("bsod-layer");
     const endLayer = document.getElementById("end-layer");
@@ -264,6 +251,7 @@
     let audioCtx = null;
     let lastVol = 1;
     let ids = [];
+    let screamVariantIndex = 0;
 
     function vol() { return parseFloat(volSlider.value) || 0; }
     function updateIcon() {
@@ -289,6 +277,142 @@
       } catch (e) {}
     }
 
+    // Отрисовка жуткого лица в стиле фото на canvas (без внешних картинок)
+    function drawCreepyFace(variant) {
+      const w = scareCanvas.width = Math.max(360, window.innerWidth);
+      const h = scareCanvas.height = Math.max(640, window.innerHeight);
+      const ctx = scareCanvas.getContext("2d");
+      if (!ctx) return;
+
+      const cx = w * 0.5;
+      const cy = h * 0.46;
+      const scale = Math.min(w / 420, h / 720) * (variant === 1 ? 1.12 : 1.0);
+
+      // Тёмный фон с тёплым тусклым пятном у лица
+      const bgGrad = ctx.createRadialGradient(cx, cy - 30 * scale, 10 * scale, cx, cy, Math.max(w, h) * 0.65);
+      bgGrad.addColorStop(0, "#2b241d");
+      bgGrad.addColorStop(0.55, "#0d0b0a");
+      bgGrad.addColorStop(1, "#000000");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(scale, scale);
+
+      // Длинные тёмные волосы в темноте
+      ctx.fillStyle = "#040404";
+      ctx.beginPath();
+      ctx.moveTo(-145, 340);
+      ctx.bezierCurveTo(-175, 110, -165, -130, -85, -220);
+      ctx.bezierCurveTo(-20, -285, 60, -285, 115, -210);
+      ctx.bezierCurveTo(175, -120, 175, 120, 145, 340);
+      ctx.closePath();
+      ctx.fill();
+
+      // Пряди волос по бокам лица
+      ctx.fillStyle = "#080707";
+      for (let i = -5; i <= 5; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * 22, -215);
+        ctx.quadraticCurveTo(i * 34 + (variant === 2 ? 12 : -6), -40, i * 26, 220);
+        ctx.lineWidth = 18;
+        ctx.strokeStyle = "#050505";
+        ctx.stroke();
+      }
+
+      // Вытянутое бледно-серое лицо
+      const faceGrad = ctx.createRadialGradient(0, -35, 15, 0, 20, 175);
+      faceGrad.addColorStop(0, "#766f6e");
+      faceGrad.addColorStop(0.55, "#423c3d");
+      faceGrad.addColorStop(0.85, "#191617");
+      faceGrad.addColorStop(1, "#060505");
+
+      ctx.fillStyle = faceGrad;
+      ctx.beginPath();
+      ctx.moveTo(-92, -65);
+      ctx.bezierCurveTo(-95, -175, 95, -175, 92, -65);
+      ctx.bezierCurveTo(98, 45, 72, 145, 26, 192);
+      ctx.quadraticCurveTo(0, 214, -26, 192);
+      ctx.bezierCurveTo(-72, 145, -98, 45, -92, -65);
+      ctx.closePath();
+      ctx.fill();
+
+      // Глубокие чёрные глазницы
+      const leftEyeX = -46;
+      const rightEyeX = 52;
+      const eyeY = -36 + (variant === 1 ? -5 : 2);
+
+      [leftEyeX, rightEyeX].forEach((ex, idx) => {
+        const sockGrad = ctx.createRadialGradient(ex, eyeY, 6, ex, eyeY, 54);
+        sockGrad.addColorStop(0, "#000000");
+        sockGrad.addColorStop(0.65, "rgba(5, 4, 5, 0.92)");
+        sockGrad.addColorStop(1, "rgba(5, 4, 5, 0)");
+        ctx.fillStyle = sockGrad;
+        ctx.beginPath();
+        ctx.ellipse(ex, eyeY, 52, 42, idx === 0 ? -0.15 : 0.15, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Белки широко раскрытых глаз
+        ctx.fillStyle = "#dad6d2";
+        ctx.beginPath();
+        ctx.ellipse(ex, eyeY, 24, 16, idx === 0 ? -0.08 : 0.08, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Тень верхнего века
+        ctx.fillStyle = "rgba(0,0,0,0.45)";
+        ctx.beginPath();
+        ctx.ellipse(ex, eyeY - 12, 25, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Мелкие жуткие зрачки
+        const px = ex + (idx === 0 ? 3 : -3) + (variant === 2 ? 2 : 0);
+        const py = eyeY + (variant === 1 ? -1 : 1);
+        ctx.fillStyle = "#050505";
+        ctx.beginPath();
+        ctx.arc(px, py, 4.4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Тёмная переносица и ноздри
+      ctx.fillStyle = "rgba(20, 16, 16, 0.55)";
+      ctx.beginPath();
+      ctx.moveTo(2, -45);
+      ctx.lineTo(-8, 35);
+      ctx.lineTo(14, 35);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = "#060505";
+      ctx.beginPath();
+      ctx.ellipse(-6, 38, 5.5, 8.5, -0.25, 0, Math.PI * 2);
+      ctx.ellipse(12, 37, 5.5, 8.5, 0.25, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Кривая тёмная пасть
+      ctx.fillStyle = "#050404";
+      ctx.beginPath();
+      ctx.moveTo(-64, 72);
+      ctx.quadraticCurveTo(4, 112, 68, 66);
+      ctx.bezierCurveTo(54, 145, 2, 155, -52, 134);
+      ctx.quadraticCurveTo(-62, 105, -64, 72);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.restore();
+
+      // Зернистость / шум поверх кадра
+      const imgData = ctx.getImageData(0, 0, w, h);
+      const d = imgData.data;
+      for (let i = 0; i < d.length; i += 16) {
+        const grain = (Math.random() - 0.5) * 34;
+        d[i] = Math.min(255, Math.max(0, d[i] + grain));
+        d[i + 1] = Math.min(255, Math.max(0, d[i + 1] + grain));
+        d[i + 2] = Math.min(255, Math.max(0, d[i + 2] + grain));
+      }
+      ctx.putImageData(imgData, 0, 0);
+    }
+
     function beep(freq, dur) {
       const v = vol();
       if (v <= 0 || !audioCtx) return;
@@ -307,52 +431,75 @@
       } catch (e) {}
     }
 
-    function bloodCurdlingScream(dur) {
+    // Несколько разных кричащих звуков людей (визг, хриплый крик, двойной вскрик)
+    function playHumanScreamVariant(dur, variant) {
       const v = vol();
       if (v <= 0 || !audioCtx) return;
       try {
         const now = audioCtx.currentTime;
 
         const compressor = audioCtx.createDynamicsCompressor();
-        compressor.threshold.setValueAtTime(-12, now);
-        compressor.knee.setValueAtTime(10, now);
-        compressor.ratio.setValueAtTime(12, now);
-        compressor.attack.setValueAtTime(0.005, now);
-        compressor.release.setValueAtTime(0.15, now);
+        compressor.threshold.setValueAtTime(-10, now);
+        compressor.knee.setValueAtTime(8, now);
+        compressor.ratio.setValueAtTime(14, now);
+        compressor.attack.setValueAtTime(0.004, now);
+        compressor.release.setValueAtTime(0.14, now);
 
         const shaper = audioCtx.createWaveShaper();
         const samples = 44100;
         const curve = new Float32Array(samples);
+        const drive = variant === 1 ? 18 : variant === 2 ? 11 : 15;
         for (let i = 0; i < samples; i++) {
           const x = (i * 2) / samples - 1;
-          curve[i] = Math.tanh(x * 14);
+          curve[i] = Math.tanh(x * drive);
         }
         shaper.curve = curve;
 
         const master = audioCtx.createGain();
         master.gain.setValueAtTime(0.05, now);
-        master.gain.linearRampToValueAtTime(0.95 * v, now + 0.03);
-        master.gain.setValueAtTime(0.9 * v, now + dur - 0.15);
+        master.gain.linearRampToValueAtTime(0.96 * v, now + 0.025);
+        master.gain.setValueAtTime(0.9 * v, now + Math.max(0.05, dur - 0.14));
         master.gain.exponentialRampToValueAtTime(0.001, now + dur);
 
         shaper.connect(compressor);
         compressor.connect(master);
         master.connect(audioCtx.destination);
 
-        const screamFreqs = [680, 1040, 1520, 2280, 3100];
-        screamFreqs.forEach((base, idx) => {
-          const osc = audioCtx.createOscillator();
-          osc.type = idx % 2 === 0 ? "sawtooth" : "square";
+        // Вариант 0: высокий панический визг человека
+        // Вариант 1: низкий хриплый надрывный крик
+        // Вариант 2: резкий двойной вскрик с падением тона
+        const voiceProfiles = [
+          { freqs: [760, 1180, 1780, 2540, 3320], vibRate: 48, vibDepth: 75, startMul: 0.78, peakMul: 1.55, endMul: 0.62, wave: "sawtooth" },
+          { freqs: [290, 540, 920, 1460, 2150], vibRate: 28, vibDepth: 55, startMul: 0.9, peakMul: 1.32, endMul: 0.45, wave: "square" },
+          { freqs: [640, 980, 1420, 2060, 2890], vibRate: 38, vibDepth: 65, startMul: 0.7, peakMul: 1.45, endMul: 0.52, wave: "sawtooth" }
+        ];
 
-          osc.frequency.setValueAtTime(base * 0.72, now);
-          osc.frequency.exponentialRampToValueAtTime(base * 1.48, now + 0.14);
-          osc.frequency.linearRampToValueAtTime(base * 1.25, now + dur * 0.6);
-          osc.frequency.exponentialRampToValueAtTime(base * 0.55, now + dur);
+        const prof = voiceProfiles[variant % voiceProfiles.length];
+
+        prof.freqs.forEach((base, idx) => {
+          const osc = audioCtx.createOscillator();
+          osc.type = idx % 2 === 0 ? prof.wave : (prof.wave === "sawtooth" ? "square" : "sawtooth");
+
+          if (variant === 2) {
+            const half = dur * 0.48;
+            osc.frequency.setValueAtTime(base * 0.75, now);
+            osc.frequency.exponentialRampToValueAtTime(base * 1.42, now + 0.08);
+            osc.frequency.exponentialRampToValueAtTime(base * 0.65, now + half);
+
+            osc.frequency.setValueAtTime(base * 0.85, now + half + 0.03);
+            osc.frequency.exponentialRampToValueAtTime(base * 1.52, now + half + 0.12);
+            osc.frequency.exponentialRampToValueAtTime(base * 0.5, now + dur);
+          } else {
+            osc.frequency.setValueAtTime(base * prof.startMul, now);
+            osc.frequency.exponentialRampToValueAtTime(base * prof.peakMul, now + 0.12);
+            osc.frequency.linearRampToValueAtTime(base * 1.18, now + dur * 0.62);
+            osc.frequency.exponentialRampToValueAtTime(base * prof.endMul, now + dur);
+          }
 
           const lfo = audioCtx.createOscillator();
           const lfoGain = audioCtx.createGain();
-          lfo.frequency.setValueAtTime(42, now);
-          lfoGain.gain.setValueAtTime(65, now);
+          lfo.frequency.setValueAtTime(prof.vibRate + idx * 4, now);
+          lfoGain.gain.setValueAtTime(prof.vibDepth, now);
           lfo.connect(lfoGain);
           lfoGain.connect(osc.frequency);
 
@@ -363,6 +510,7 @@
           osc.stop(now + dur);
         });
 
+        // Шум дыхания / надрыва голоса
         const bufferSize = Math.floor(audioCtx.sampleRate * dur);
         const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
         const data = noiseBuffer.getChannelData(0);
@@ -374,11 +522,11 @@
 
         const filter = audioCtx.createBiquadFilter();
         filter.type = "bandpass";
-        filter.frequency.setValueAtTime(1600, now);
-        filter.Q.setValueAtTime(2.5, now);
+        filter.frequency.setValueAtTime(variant === 1 ? 1150 : 1850, now);
+        filter.Q.setValueAtTime(2.2, now);
 
         const noiseGain = audioCtx.createGain();
-        noiseGain.gain.setValueAtTime(0.45 * v, now);
+        noiseGain.gain.setValueAtTime(0.5 * v, now);
 
         noise.connect(filter);
         filter.connect(noiseGain);
@@ -399,7 +547,7 @@
     window.addEventListener("popstate", () => {
       if (active) {
         history.pushState(null, "", location.href);
-        runScreamer(1100);
+        runScreamer(1150);
       }
     });
 
@@ -410,121 +558,4 @@
         e.key === "F12" ||
         e.key === "F5" ||
         (e.ctrlKey && ["w", "W", "r", "R", "u", "U", "s", "S"].includes(e.key)) ||
-        (e.ctrlKey && e.shiftKey && ["I", "J", "C", "i", "j", "c"].includes(e.key))
-      ) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    });
-
-    document.addEventListener("click", () => {
-      if (active && !document.fullscreenElement && document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      }
-    });
-
-    openBtn.addEventListener("click", () => {
-      initAudio();
-      modalBg.style.display = "flex";
-    });
-
-    cancelBtn.addEventListener("click", () => {
-      modalBg.style.display = "none";
-    });
-
-    function addMiniErr() {
-      const msgs = [
-        "CRITICAL_ERROR: Система захвачена!",
-        "Попытка выхода заблокирована!",
-        "ОШИБКА ДОСТУПА 0x0000000F",
-        "Сбой сети! Связь потеряна!"
-      ];
-      const d = document.createElement("div");
-      d.className = "mini-err";
-      d.style.left = Math.floor(Math.random() * Math.max(10, window.innerWidth - 245)) + "px";
-      d.style.top = Math.floor(Math.random() * Math.max(10, window.innerHeight - 105)) + "px";
-      const txt = msgs[Math.floor(Math.random() * msgs.length)];
-      d.innerHTML = '<div class="mini-err-top">SYSTEM ALERT</div><div class="mini-err-body">❌ ' + txt + "</div>";
-      redLayer.appendChild(d);
-    }
-
-    function runScreamer(ms) {
-      soundBox.style.display = "none";
-      screamerLayer.style.display = "flex";
-      bloodCurdlingScream(ms / 1000);
-      if (navigator.vibrate) {
-        navigator.vibrate([300, 80, 400, 80, 500]);
-      }
-      ids.push(setTimeout(() => {
-        screamerLayer.style.display = "none";
-        soundBox.style.display = "flex";
-      }, ms));
-    }
-
-    confirmBtn.addEventListener("click", () => {
-      initAudio();
-      active = true;
-
-      history.pushState(null, "", location.href);
-
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      }
-
-      modalBg.style.display = "none";
-      redLayer.style.display = "block";
-      codeDump.textContent = "";
-
-      ids.push(setInterval(() => {
-        codeDump.textContent += "FATAL_BREACH_0x99F " + Math.random().toString(36).slice(2) + " ";
-        if (codeDump.textContent.length > 4000) codeDump.textContent = codeDump.textContent.slice(1200);
-      }, 40));
-
-      ids.push(setInterval(() => {
-        addMiniErr();
-        beep(100 + Math.random() * 420, 0.08);
-        if (Math.random() > 0.5) redLayer.classList.toggle("invert-screen");
-      }, 380));
-
-      ids.push(setTimeout(() => runScreamer(1400), 1800));
-
-      ids.push(setTimeout(() => {
-        netLayer.style.display = "block";
-        beep(75, 0.35);
-      }, 4200));
-
-      ids.push(setTimeout(() => {
-        netLayer.style.display = "none";
-        runScreamer(1700);
-      }, 6800));
-
-      ids.push(setTimeout(() => {
-        redLayer.classList.remove("invert-screen");
-        redLayer.style.display = "none";
-        bsodLayer.style.display = "block";
-        beep(55, 0.6);
-        let p = 0;
-        const pi = setInterval(() => {
-          p = Math.min(100, p + 25);
-          bsodPct.textContent = "Завершено: " + p + "%";
-          if (p === 100) clearInterval(pi);
-        }, 350);
-        ids.push(pi);
-      }, 9500));
-
-      ids.push(setTimeout(() => {
-        ids.forEach((x) => { clearTimeout(x); clearInterval(x); });
-        ids = [];
-        active = false;
-        bsodLayer.style.display = "none";
-        screamerLayer.style.display = "none";
-        soundBox.style.display = "flex";
-        endLayer.style.display = "flex";
-        if (document.fullscreenElement && document.exitFullscreen) {
-          document.exitFullscreen().catch(() => {});
-        }
-      }, 13000));
-    });
-  </script>
-</body>
-</html>
+        (e.ctrlKey && e.shiftKey && ["I", "J", "C", "i", "j
