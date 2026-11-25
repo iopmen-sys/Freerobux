@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Free Robux Generator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100dvh;
+      background: #101216;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    .sound-box {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 9999;
+      background: #1e232b;
+      border: 1px solid #3a4250;
+      border-radius: 20px;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sound-box button {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 380px;
+      background: #1c2028;
+      border: 1px solid #2f3642;
+      border-radius: 16px;
+      padding: 28px 20px;
+      text-align: center;
+      position: relative;
+      z-index: 10;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.75);
+    }
+
+    .card h1 { font-size: 24px; margin: 10px 0; }
+    .card p { color: #b5bdc9; font-size: 14px; margin-bottom: 20px; }
+
+    .btn-main {
+      width: 100%;
+      padding: 15px;
+      font-size: 17px;
+      font-weight: bold;
+      color: #fff;
+      background: #0074e4;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(0, 116, 228, 0.45);
+    }
+
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 340px;
+      background: #232832;
+      border: 1px solid #3c4452;
+      border-radius: 12px;
+      padding: 22px;
+      text-align: center;
+    }
+
+    .modal-box p { color: #d0d7e2; margin: 10px 0 20px; font-size: 14px; }
+    .row { display: flex; gap: 10px; }
+    .btn-ok { flex: 1; padding: 12px; background: #00b06f; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; }
+    .btn-cancel { flex: 1; padding: 12px; background: #464e5c; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; }
+
+    .layer { display: none; position: fixed; inset: 0; overflow: hidden; }
+
+    #red-layer { background: #180000; z-index: 500; }
+    #code-dump {
+      position: absolute; inset: 0; padding: 10px;
+      font-family: monospace; font-size: 12px; color: rgba(255, 55, 55, 0.6);
+      word-break: break-all;
+    }
+
+    .scanlines {
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(0deg, rgba(0,0,0,0.4), rgba(0,0,0,0.4) 2px, transparent 2px, transparent 4px);
+      pointer-events: none; z-index: 505;
+    }
+
+    #err-big {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      font-family: monospace; font-size: clamp(48px, 15vw, 110px); font-weight: 900; color: #fff;
+      text-shadow: 0 0 25px #f00, 0 0 50px #f00, 4px 4px 0 #800; z-index: 510;
+      animation: errShake 0.1s infinite;
+    }
+
+    @keyframes errShake {
+      0% { transform: translate(-50%, -50%) skew(0deg); }
+      25% { transform: translate(-53%, -47%) skew(5deg); }
+      50% { transform: translate(-47%, -52%) skew(-5deg); }
+      75% { transform: translate(-52%, -48%) skew(3deg); }
+      100% { transform: translate(-50%, -50%) skew(0deg); }
+    }
+
+    .mini-err {
+      position: absolute; width: 230px; background: #e6e6e6; color: #111;
+      border: 2px solid #fff; border-right-color: #444; border-bottom-color: #444;
+      box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.85);
+      font-size: 12px; z-index: 520;
+    }
+    .mini-err-top { background: linear-gradient(90deg, #8a0000, #ff1a1a); color: #fff; padding: 4px 8px; font-weight: bold; }
+    .mini-err-body { padding: 10px; font-weight: bold; }
+
+    #screamer-layer {
+      background: #020202;
+      z-index: 9500;
+      align-items: center;
+      justify-content: center;
+      animation: scareViolent 0.055s infinite;
+    }
+
+    @keyframes scareViolent {
+      0% { transform: scale(1.06) translate(0px, 0px) rotate(0deg); }
+      20% { transform: scale(1.22) translate(-14px, 10px) rotate(-3deg); }
+      40% { transform: scale(1.15) translate(16px, -12px) rotate(3deg); }
+      60% { transform: scale(1.26) translate(-10px, -14px) rotate(-2deg); }
+      80% { transform: scale(1.18) translate(14px, 12px) rotate(4deg); }
+      100% { transform: scale(1.08) translate(0px, 0px) rotate(0deg); }
+    }
+
+    #scareCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #net-layer { background: #fff; color: #444; z-index: 700; padding: 60px 24px; }
+    #bsod-layer { background: #0078d7; color: #fff; z-index: 800; padding: 60px 24px; }
+    #end-layer {
+      background: #090b0e; color: #fff; z-index: 9999;
+      flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 24px;
+    }
+
+    .invert-screen { filter: invert(1) hue-rotate(180deg); }
+  </style>
+</head>
+<body oncontextmenu="return false;">
+
+  <div class="sound-box" id="soundBox">
+    <button id="muteBtn" type="button">🔊</button>
+    <input id="volSlider" type="range" min="0" max="1" step="0.05" value="1" />
+  </div>
+
+  <div class="card" id="startCard">
+    <div style="font-size:52px;">💎</div>
+    <h1>ФРИ РОБУКСЫ</h1>
+    <p>Нажмите кнопку, чтобы мгновенно получить 10,000 робуксов на ваш аккаунт.</p>
+    <button class="btn-main" id="openBtn" type="button">ПОЛУЧИТЬ РОБУКСЫ</button>
+  </div>
+
+  <div class="modal-bg" id="modalBg">
+    <div class="modal-box">
+      <h3>Подтверждение</h3>
+      <p>Вы подтверждаете активацию скрипта начисления робуксов?</p>
+      <div class="row">
+        <button class="btn-ok" id="confirmBtn" type="button">Подтвердить</button>
+        <button class="btn-cancel" id="cancelBtn" type="button">Отменить</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="layer" id="red-layer">
+    <div id="code-dump"></div>
+    <div class="scanlines"></div>
+    <div id="err-big">ERROR</div>
+  </div>
+
+  <div class="layer" id="screamer-layer">
+    <canvas id="scareCanvas"></canvas>
+  </div>
+
+  <div class="layer" id="net-layer">
+    <h2>Нет подключения к Интернету</h2>
+    <p style="margin-top:10px;">Соединение разорвано. Попытка восстановления...</p>
+    <p style="margin-top:8px;font-size:12px;color:#888;">ERR_INTERNET_DISCONNECTED</p>
+  </div>
+
+  <div class="layer" id="bsod-layer">
+    <div style="font-size:64px;margin-bottom:14px;">:(</div>
+    <p>На вашем устройстве возникла критическая ошибка. Система заблокирована до завершения диагностики.</p>
+    <p id="bsodPct" style="margin-top:14px;font-weight:bold;">Завершено: 0%</p>
+    <p style="margin-top:10px;font-size:13px;opacity:0.8;">STOP CODE: CRITICAL_SYSTEM_INTRUSION</p>
+  </div>
+
+  <div class="layer" id="end-layer">
+    <h1 style="color:#ff3b3b;font-size:30px;margin-bottom:14px;">РОБУКСЫ УЖЕ У ВАС! 🤡</h1>
+    <p style="max-width:380px;line-height:1.5;font-size:16px;">Проверяй баланс... Шучу! Бесплатный сыр только в мышеловке. Теперь блокировка снята, можешь закрыть вкладку.</p>
+  </div>
+
+  <script>
+    (function () {
+      const openBtn = document.getElementById("openBtn");
+      const modalBg = document.getElementById("modalBg");
+      const confirmBtn = document.getElementById("confirmBtn");
+      const cancelBtn = document.getElementById("cancelBtn");
+      const muteBtn = document.getElementById("muteBtn");
+      const volSlider = document.getElementById("volSlider");
+      const soundBox = document.getElementById("soundBox");
+
+      const redLayer = document.getElementById("red-layer");
+      const codeDump = document.getElementById("code-dump");
+      const screamerLayer = document.getElementById("screamer-layer");
+      const scareCanvas = document.getElementById("scareCanvas");
+      const netLayer = document.getElementById("net-layer");
+      const bsodLayer = document.getElementById("bsod-layer");
+      const endLayer = document.getElementById("end-layer");
+      const bsodPct = document.getElementById("bsodPct");
+
+      let active = false;
+      let audioCtx = null;
+      let lastVol = 1;
+      let ids = [];
+      let screamVariantIndex = 0;
+
+      function vol() { return parseFloat(volSlider.value) || 0; }
+      function updateIcon() {
+        const v = vol();
+        muteBtn.textContent = v === 0 ? "🔇" : (v < 0.5 ? "🔉" : "🔊");
+      }
+
+      volSlider.addEventListener("input", () => {
+        if (vol() > 0) lastVol = vol();
+        updateIcon();
+      });
+
+      muteBtn.addEventListener("click", () => {
+        volSlider.value = vol() > 0 ? "0" : String(lastVol);
+        updateIcon();
+      });
+
+      function initAudio() {
+        try {
+          if (!audioCtx) {
+            const C = window.AudioContext || window.webkitAudioContext;
+            if (C) audioCtx = new C();
+          }
+          if (audioCtx && audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
+        } catch (e) {}
+      }
+
+      function drawCreepyFace(variant) {
+        try {
+          const w = scareCanvas.width = Math.max(360, window.innerWidth || 360);
+          const h = scareCanvas.height = Math.max(640, window.innerHeight || 640);
+          const ctx = scareCanvas.getContext("2d");
+          if (!ctx) return;
+
+          const cx = w * 0.5;
+          const cy = h * 0.46;
+          const scale = Math.min(w / 420, h / 720) * (variant === 1 ? 1.12 : 1.0);
+
+          const bgGrad = ctx.createRadialGradient(cx, cy - 30 * scale, 10 * scale, cx, cy, Math.max(w, h) * 0.65);
+          bgGrad.addColorStop(0, "#2b241d");
+          bgGrad.addColorStop(0.55, "#0d0b0a");
+          bgGrad.addColorStop(1, "#000000");
+          ctx.fillStyle = bgGrad;
+          ctx.fillRect(0, 0, w, h);
+
+          ctx.save();
+          ctx.translate(cx, cy);
+          ctx.scale(scale, scale);
+
+          ctx.fillStyle = "#040404";
+          ctx.beginPath();
+          ctx.moveTo(-145, 340);
+          ctx.bezierCurveTo(-175, 110, -165, -130, -85, -220);
+          ctx.bezierCurveTo(-20, -285, 60, -285, 115, -210);
+          ctx.bezierCurveTo(175, -120, 175, 120, 145, 340);
+          ctx.closePath();
+          ctx.fill();
+
+          for (let i = -5; i <= 5; i++) {
+            ctx.beginPath();
+            ctx.moveTo(i * 22, -215);
+            ctx.quadraticCurveTo(i * 34 + (variant === 2 ? 12 : -6), -40, i * 26, 220);
+            ctx.lineWidth = 18;
+            ctx.strokeStyle = "#050505";
+            ctx.stroke();
+          }
+
+          const faceGrad = ctx.createRadialGradient(0, -35, 15, 0, 20, 175);
+          faceGrad.addColorStop(0, "#766f6e");
+          faceGrad.addColorStop(0.55, "#423c3d");
+          faceGrad.addColorStop(0.85, "#191617");
+          faceGrad.addColorStop(1, "#060505");
+
+          ctx.fillStyle = faceGrad;
+          ctx.beginPath();
+          ctx.moveTo(-92, -65);
+          ctx.bezierCurveTo(-95, -175, 95, -175, 92, -65);
+          ctx.bezierCurveTo(98, 45, 72, 145, 26, 192);
+          ctx.quadraticCurveTo(0, 214, -26, 192);
+          ctx.bezierCurveTo(-72, 145, -98, 45, -92, -65);
+          ctx.closePath();
+          ctx.fill();
+
+          const leftEyeX = -46;
+          const rightEyeX = 52;
+          const eyeY = -36 + (variant === 1 ? -5 : 2);
+
+          [leftEyeX, rightEyeX].forEach((ex, idx) => {
+            const sockGrad = ctx.createRadialGradient(ex, eyeY, 6, ex, eyeY, 54);
+            sockGrad.addColorStop(0, "#000000");
+            sockGrad.addColorStop(0.65, "rgba(5, 4, 5, 0.92)");
+            sockGrad.addColorStop(1, "rgba(5, 4, 5, 0)");
+            ctx.fillStyle = sockGrad;
+            ctx.beginPath();
+            ctx.ellipse(ex, eyeY, 52, 42, idx === 0 ? -0.15 : 0.15, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = "#dad6d2";
+            ctx.beginPath();
+            ctx.ellipse(ex, eyeY, 24, 16, idx === 0 ? -0.08 : 0.08, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = "rgba(0,0,0,0.45)";
+            ctx.beginPath();
+            ctx.ellipse(ex, eyeY - 12, 25, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            const px = ex + (idx === 0 ? 3 : -3) + (variant === 2 ? 2 : 0);
+            const py = eyeY + (variant === 1 ? -1 : 1);
+            ctx.fillStyle = "#050505";
+            ctx.beginPath();
+            ctx.arc(px, py, 4.4, 0, Math.PI * 2);
+            ctx.fill();
+          });
+
+          ctx.fillStyle = "rgba(20, 16, 16, 0.55)";
+          ctx.beginPath();
+          ctx.moveTo(2, -45);
+          ctx.lineTo(-8, 35);
+          ctx.lineTo(14, 35);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.fillStyle = "#060505";
+          ctx.beginPath();
+          ctx.ellipse(-6, 38, 5.5, 8.5, -0.25, 0, Math.PI * 2);
+          ctx.ellipse(12, 37, 5.5, 8.5, 0.25, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = "#050404";
+          ctx.beginPath();
+          ctx.moveTo(-64, 72);
+          ctx.quadraticCurveTo(4, 112, 68, 66);
+          ctx.bezierCurveTo(54, 145, 2, 155, -52, 134);
+          ctx.quadraticCurveTo(-62, 105, -64, 72);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.restore();
+
+          for (let i = 0; i < 900; i++) {
+            const gx = Math.floor(Math.random() * w);
+            const gy = Math.floor(Math.random() * h);
+            ctx.fillStyle = Math.random() > 0.5 ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.12)";
+            ctx.fillRect(gx, gy, 2, 2);
+          }
+        } catch (e) {}
+      }
+
+      function beep(freq, dur) {
+        const v = vol();
+        if (v <= 0 || !audioCtx) return;
+        try {
+          const now = audioCtx.currentTime;
+          const osc = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          osc.type = "sawtooth";
+          osc.frequency.setValueAtTime(freq, now);
+          g.gain.setValueAtTime(0.22 * v, now);
+          g.gain.exponentialRampToValueAtTime(0.001, now + dur);
+          osc.connect(g);
+          g.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + dur);
+        } catch (e) {}
+      }
+
+      function playHumanScreamVariant(dur, variant) {
+        const v = vol();
+        if (v <= 0 || !audioCtx) return;
+        try {
+          const now = audioCtx.currentTime;
+
+          const compressor = audioCtx.createDynamicsCompressor();
+          compressor.threshold.setValueAtTime(-10, now);
+          compressor.knee.setValueAtTime(8, now);
+          compressor.ratio.setValueAtTime(14, now);
+          compressor.attack.setValueAtTime(0.004, now);
+          compressor.release.setValueAtTime(0.14, now);
+
+          const shaper = audioCtx.createWaveShaper();
+          const samples = 44100;
+          const curve = new Float32Array(samples);
+          const drive = variant === 1 ? 18 : variant === 2 ? 11 : 15;
+          for (let i = 0; i < samples; i++) {
+            const x = (i * 2) / samples - 1;
+            curve[i] = Math.tanh(x * drive);
+          }
+          shaper.curve = curve;
+
+          const master = audioCtx.createGain();
+          master.gain.setValueAtTime(0.05, now);
+          master.gain.linearRampToValueAtTime(0.96 * v, now + 0.025);
+          master.gain.setValueAtTime(0.9 * v, now + Math.max(0.05, dur - 0.14));
+          master.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+          shaper.connect(compressor);
+          compressor.connect(master);
+          master.connect(audioCtx.destination);
+
+          const voiceProfiles = [
+            { freqs: [760, 1180, 1780, 2540, 3320], vibRate: 48, vibDepth: 75, startMul: 0.78, peakMul: 1.55, endMul: 0.62, wave: "sawtooth" },
+            { freqs: [290, 540, 920, 1460, 2150], vibRate: 28, vibDepth: 55, startMul: 0.9, peakMul: 1.32, endMul: 0.45, wave: "square" },
+            { freqs: [640, 980, 1420, 2060, 2890], vibRate: 38, vibDepth: 65, startMul: 0.7, peakMul: 1.45, endMul: 0.52, wave: "sawtooth" }
+          ];
+
+          const prof = voiceProfiles[variant % voiceProfiles.length];
+
+          prof.freqs.forEach((base, idx) => {
+            const osc = audioCtx.createOscillator();
+            osc.type = idx % 2 === 0 ? prof.wave : (prof.wave === "sawtooth" ? "square" : "sawtooth");
+
+            if (variant === 2) {
+              const half = dur * 0.48;
+              osc.frequency.setValueAtTime(base * 0.75, now);
+              osc.frequency.exponentialRampToValueAtTime(base * 1.42, now + 0.08);
+              osc.frequency.exponentialRampToValueAtTime(base * 0.65, now + half);
+
+              osc.frequency.setValueAtTime(base * 0.85, now + half + 0.03);
+              osc.frequency.exponentialRampToValueAtTime(base * 1.52, now + half + 0.12);
+              osc.frequency.exponentialRampToValueAtTime(base * 0.5, now + dur);
+            } else {
+              osc.frequency.setValueAtTime(base * prof.startMul, now);
+              osc.frequency.exponentialRampToValueAtTime(base * prof.peakMul, now + 0.12);
+              osc.frequency.linearRampToValueAtTime(base * 1.18, now + dur * 0.62);
+              osc.frequency.exponentialRampToValueAtTime(base * prof.endMul, now + dur);
+            }
+
+            const lfo = audioCtx.createOscillator();
+            const lfoGain = audioCtx.createGain();
+            lfo.frequency.setValueAtTime(prof.vibRate + idx * 4, now);
+            lfoGain.gain.setValueAtTime(prof.vibDepth, now);
+            lfo.connect(lfoGain);
+            lfoGain.connect(osc.frequency);
+
+            osc.connect(shaper);
+            lfo.start(now);
+            osc.start(now);
+            lfo.stop(now + dur);
+            osc.stop(now + dur);
+          });
+
+          const bufferSize = Math.floor(audioCtx.sampleRate * dur);
+          const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+          const data = noiseBuffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+          }
+          const noise = audioCtx.createBufferSource();
+          noise.buffer = noiseBuffer;
+
+          const filter = audioCtx.createBiquadFilter();
+          filter.type = "bandpass";
+          filter.frequency.setValueAtTime(variant === 1 ? 1150 : 1850, now);
+          filter.Q.setValueAtTime(2.2, now);
+
+          const noiseGain = audioCtx.createGain();
+          noiseGain.gain.setValueAtTime(0.5 * v, now);
+
+          noise.connect(filter);
+          filter.connect(noiseGain);
+          noiseGain.connect(shaper);
+          noise.start(now);
+          noise.stop(now + dur);
+        } catch (e) {}
+      }
+
+      window.addEventListener("beforeunload", (e) => {
+        if (active) {
+          e.preventDefault();
+          e.returnValue = "КРИТИЧЕСКАЯ ОШИБКА! НЕ ЗАКРЫВАЙТЕ СТРАНИЦУ!";
+          return e.returnValue;
+        }
+      });
+
+      window.addEventListener("popstate", () => {
+        if (active) {
+          try { history.pushState(null, "", location.href); } catch (e) {}
+          runScreamer(1150);
+        }
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (!active) return;
+        if (
+          e.key === "Escape" ||
+          e.key === "F12" ||
+          e.key === "F5" ||
+          (e.ctrlKey && ["w", "W", "r", "R", "u", "U", "s", "S"].includes(e.key)) ||
+          (e.ctrlKey && e.shiftKey && ["I", "J", "C", "i", "j", "c"].includes(e.key))
+        ) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      });
+
+      openBtn.addEventListener("click", () => {
+        initAudio();
+        modalBg.style.display = "flex";
+      });
+
+      cancelBtn.addEventListener("click", () => {
+    
