@@ -24,12 +24,12 @@
             align-items: center;
         }
 
-        /* Регулятор громкости в углу */
+        /* Регулятор громкости */
         #volume-control {
             position: fixed;
             top: 15px;
             right: 15px;
-            background: rgba(25, 28, 34, 0.9);
+            background: rgba(25, 28, 34, 0.92);
             border: 1px solid #444;
             padding: 8px 14px;
             border-radius: 20px;
@@ -105,7 +105,11 @@
             background: rgba(0, 0, 0, 0.85);
             justify-content: center;
             align-items: center;
-            z-index: 20;
+            z-index: 200;
+        }
+
+        #modal.active {
+            display: flex;
         }
 
         .modal-box {
@@ -163,232 +167,4 @@
             color: rgba(255, 60, 60, 0.5);
             font-family: 'Courier New', Courier, monospace;
             font-size: 13px;
-            line-height: 1.3;
-            padding: 10px;
-            word-break: break-all;
-            overflow: hidden;
-        }
-
-        .scanlines {
-            position: absolute;
-            inset: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0, 0, 0, 0.35),
-                rgba(0, 0, 0, 0.35) 2px,
-                transparent 2px,
-                transparent 4px
-            );
-            pointer-events: none;
-            z-index: 52;
-        }
-
-        #error-banner {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 11vw;
-            font-weight: 900;
-            color: #ffffff;
-            text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000, 4px 4px 0px #990000;
-            letter-spacing: 8px;
-            z-index: 55;
-            animation: glitch-shake 0.12s infinite;
-        }
-
-        @keyframes glitch-shake {
-            0% { transform: translate(-50%, -50%) skew(0deg); }
-            25% { transform: translate(-53%, -47%) skew(4deg); }
-            50% { transform: translate(-47%, -52%) skew(-4deg); }
-            75% { transform: translate(-52%, -48%) skew(2deg); }
-            100% { transform: translate(-50%, -50%) skew(0deg); }
-        }
-
-        /* Экран СКРИМЕРА */
-        #screamer-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: #000;
-            z-index: 95;
-            justify-content: center;
-            align-items: center;
-            animation: screamer-flash 0.08s infinite;
-        }
-
-        @keyframes screamer-flash {
-            0% { background: #000; transform: scale(1) rotate(0deg); }
-            50% { background: #4a0000; transform: scale(1.12) rotate(-2deg); }
-            100% { background: #000; transform: scale(1.05) rotate(2deg); }
-        }
-
-        .screamer-face {
-            width: 85vmin;
-            height: 85vmin;
-        }
-
-        /* Всплывающие окна */
-        .popup-window {
-            position: absolute;
-            background: #e0e0e0;
-            color: #000;
-            border: 2px solid #fff;
-            border-right-color: #444;
-            border-bottom-color: #444;
-            width: 300px;
-            font-family: 'Tahoma', sans-serif;
-            font-size: 13px;
-            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.8);
-            z-index: 60;
-        }
-
-        .popup-header {
-            background: linear-gradient(90deg, #900000, #ff1a1a);
-            color: white;
-            font-weight: bold;
-            padding: 4px 8px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .popup-body {
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        /* Пропадание интернета */
-        #no-internet {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: #ffffff;
-            color: #5f6368;
-            z-index: 80;
-            padding: 12% 15%;
-            font-family: Arial, sans-serif;
-        }
-
-        #no-internet h2 {
-            color: #202124;
-            font-size: 24px;
-            margin: 20px 0 10px;
-        }
-
-        /* Синий экран смерти */
-        #bsod {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: #0078d7;
-            color: white;
-            z-index: 90;
-            padding: 10%;
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        #bsod .sad-face { font-size: 100px; margin-bottom: 20px; }
-        #bsod p { font-size: 22px; max-width: 700px; line-height: 1.5; margin-bottom: 20px; }
-
-        /* Финальный троллинг */
-        #troll-screen {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: #000;
-            color: #00ff66;
-            z-index: 100;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
-            font-family: 'Courier New', monospace;
-        }
-
-        #troll-screen h1 {
-            font-size: 42px;
-            color: #ff3333;
-            margin-bottom: 20px;
-            text-shadow: 0 0 15px red;
-        }
-
-        #troll-screen p {
-            font-size: 22px;
-            max-width: 650px;
-            line-height: 1.5;
-            color: #fff;
-        }
-
-        .invert-glitch {
-            filter: invert(1) hue-rotate(180deg);
-        }
-    </style>
-</head>
-<body oncontextmenu="return false;">
-
-    <!-- Регулятор громкости (всегда доступен сверху справа) -->
-    <div id="volume-control">
-        <span id="vol-icon">🔊</span>
-        <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.5">
-    </div>
-
-    <!-- 1. Начальный экран -->
-    <div id="start-screen">
-        <div class="robux-icon">💎</div>
-        <h1>ФРИ РОБУКСЫ (FREE ROBUX)</h1>
-        <p class="subtitle">Нажмите на кнопку ниже, чтобы зачислить 10,000 R$ на аккаунт</p>
-        <button class="btn-blue" onclick="openModal()">ПОЛУЧИТЬ РОБУКСЫ</button>
-    </div>
-
-    <!-- 2. Окно подтверждения -->
-    <div id="modal">
-        <div class="modal-box">
-            <h2>Подтверждение</h2>
-            <p>Вы действительно хотите активировать генератор и получить 10,000 робуксов прямо сейчас?</p>
-            <div class="modal-buttons">
-                <button class="btn-confirm" onclick="startPrank()">Подтвердить</button>
-                <button class="btn-cancel" onclick="closeModal()">Отменить</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 3. Красный экран с кодом и ERROR -->
-    <div id="virus-screen">
-        <div id="matrix-code"></div>
-        <div class="scanlines"></div>
-        <div id="error-banner">ERROR</div>
-    </div>
-
-    <!-- СКРИМЕР -->
-    <div id="screamer-overlay">
-        <svg class="screamer-face" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-            <!-- Череп / искаженное лицо -->
-            <ellipse cx="100" cy="100" rx="75" ry="92" fill="#e6e6e6" />
-            <ellipse cx="100" cy="105" rx="68" ry="85" fill="#1a1a1a" />
-            <path d="M40 70 Q100 30 160 70 Q175 130 135 180 Q100 195 65 180 Q25 130 40 70 Z" fill="#dcdcdc"/>
-            <!-- Черные провалы глаз -->
-            <ellipse cx="68" cy="82" rx="22" ry="26" fill="#000" />
-            <ellipse cx="132" cy="82" rx="22" ry="26" fill="#000" />
-            <!-- Светящиеся красные зрачки -->
-            <circle cx="68" cy="82" r="5" fill="#ff0000" />
-            <circle cx="132" cy="82" r="5" fill="#ff0000" />
-            <!-- Провалы носа -->
-            <polygon points="100,102 91,122 98,122" fill="#000" />
-            <polygon points="100,102 109,122 102,122" fill="#000" />
-            <!-- Кричащий огромный рот -->
-            <ellipse cx="100" cy="152" rx="34" ry="38" fill="#000" />
-            <!-- Зубы -->
-            <path d="M74 134 L80 144 L86 132 L92 145 L100 132 L108 145 L114 132 L120 144 L126 134" fill="#fff" />
-            <path d="M76 172 L82 162 L88 174 L94 161 L100 174 L106 161 L112 174 L118 162 L124 172" fill="#fff" />
-        </svg>
-    </div>
-
-    <!-- 4. Пропадание интернета -->
-    <div id="no-internet">
-        <div style="font-size: 48px;">🦖</div>
-
         
