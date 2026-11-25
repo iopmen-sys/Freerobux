@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Free Robux</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      background: #101216;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    .sound-box {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 9999;
+      background: #1e232b;
+      border: 1px solid #3a4250;
+      border-radius: 20px;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sound-box button {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 380px;
+      background: #1c2028;
+      border: 1px solid #2f3642;
+      border-radius: 16px;
+      padding: 28px 20px;
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    .card h1 { font-size: 24px; margin: 10px 0; }
+    .card p { color: #b5bdc9; font-size: 14px; margin-bottom: 20px; }
+
+    .btn-main {
+      width: 100%;
+      padding: 15px;
+      font-size: 17px;
+      font-weight: bold;
+      color: #fff;
+      background: #0074e4;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 340px;
+      background: #232832;
+      border: 1px solid #3c4452;
+      border-radius: 12px;
+      padding: 22px;
+      text-align: center;
+    }
+
+    .modal-box p { color: #d0d7e2; margin: 10px 0 20px; font-size: 14px; }
+    .row { display: flex; gap: 10px; }
+    .btn-ok { flex: 1; padding: 12px; background: #00b06f; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; }
+    .btn-cancel { flex: 1; padding: 12px; background: #464e5c; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; }
+
+    .layer { display: none; position: fixed; inset: 0; overflow: hidden; }
+
+    #red-layer { background: #180000; z-index: 3000; }
+    #code-dump {
+      position: absolute; inset: 0; padding: 10px;
+      font-family: monospace; font-size: 12px; color: rgba(255, 65, 65, 0.65);
+      word-break: break-all;
+    }
+
+    #err-big {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      font-family: monospace; font-size: 56px; font-weight: 900; color: #fff;
+      text-shadow: 0 0 20px #f00, 4px 4px 0 #800; z-index: 3020;
+    }
+
+    .mini-err {
+      position: absolute; width: 225px; background: #e6e6e6; color: #111;
+      border: 2px solid #fff; box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.85);
+      font-size: 12px; z-index: 3030;
+    }
+    .mini-err-top { background: #b30000; color: #fff; padding: 4px 8px; font-weight: bold; }
+    .mini-err-body { padding: 10px; font-weight: bold; }
+
+    #screamer-layer {
+      background: #020202;
+      z-index: 8000;
+      align-items: center;
+      justify-content: center;
+      animation: scareShake 0.06s infinite;
+    }
+
+    @keyframes scareShake {
+      0% { transform: scale(1.05) translate(0, 0); }
+      25% { transform: scale(1.18) translate(-12px, 8px); }
+      50% { transform: scale(1.12) translate(12px, -10px); }
+      75% { transform: scale(1.2) translate(-8px, -8px); }
+      100% { transform: scale(1.06) translate(0, 0); }
+    }
+
+    #scareCanvas { width: 100%; height: 100%; display: block; }
+
+    #net-layer { background: #fff; color: #444; z-index: 5000; padding: 60px 24px; }
+    #bsod-layer { background: #0078d7; color: #fff; z-index: 6000; padding: 60px 24px; }
+    #end-layer {
+      background: #090b0e; color: #fff; z-index: 9500;
+      flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="sound-box" id="soundBox">
+    <button id="muteBtn" type="button">🔊</button>
+    <input id="volSlider" type="range" min="0" max="1" step="0.05" value="1" />
+  </div>
+
+  <div class="card" id="startCard">
+    <div style="font-size:52px;">💎</div>
+    <h1>ФРИ РОБУКСЫ</h1>
+    <p>Нажмите кнопку, чтобы запустить получение робуксов.</p>
+    <button class="btn-main" id="openBtn" type="button">ПОЛУЧИТЬ РОБУКСЫ</button>
+  </div>
+
+  <div class="modal-bg" id="modalBg">
+    <div class="modal-box">
+      <h3>Подтверждение</h3>
+      <p>Подтвердить запуск получения робуксов?</p>
+      <div class="row">
+        <button class="btn-ok" id="confirmBtn" type="button">Подтвердить</button>
+        <button class="btn-cancel" id="cancelBtn" type="button">Отменить</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="layer" id="red-layer">
+    <div id="code-dump"></div>
+    <div id="err-big">ERROR</div>
+  </div>
+
+  <div class="layer" id="screamer-layer">
+    <canvas id="scareCanvas"></canvas>
+  </div>
+
+  <div class="layer" id="net-layer">
+    <h2>Нет подключения к Интернету</h2>
+    <p style="margin-top:10px;">ERR_INTERNET_DISCONNECTED</p>
+  </div>
+
+  <div class="layer" id="bsod-layer">
+    <div style="font-size:64px;margin-bottom:14px;">:(</div>
+    <p>Критическая ошибка системы. Собираются данные...</p>
+    <p id="bsodPct" style="margin-top:14px;font-weight:bold;">Завершено: 0%</p>
+  </div>
+
+  <div class="layer" id="end-layer">
+    <h1 style="color:#ff3b3b;font-size:30px;margin-bottom:14px;">РОБУКСЫ УЖЕ У ВАС! 🤡</h1>
+    <p style="max-width:380px;line-height:1.5;font-size:16px;">Шутка! Бесплатных робуксов не бывает. Блокировка снята, можешь закрыть вкладку.</p>
+  </div>
+
+  <script>
+    (function () {
+      const openBtn = document.getElementById("openBtn");
+      const modalBg = document.getElementById("modalBg");
+      const confirmBtn = document.getElementById("confirmBtn");
+      const cancelBtn = document.getElementById("cancelBtn");
+      const muteBtn = document.getElementById("muteBtn");
+      const volSlider = document.getElementById("volSlider");
+      const soundBox = document.getElementById("soundBox");
+
+      const redLayer = document.getElementById("red-layer");
+      const codeDump = document.getElementById("code-dump");
+      const screamerLayer = document.getElementById("screamer-layer");
+      const scareCanvas = document.getElementById("scareCanvas");
+      const netLayer = document.getElementById("net-layer");
+      const bsodLayer = document.getElementById("bsod-layer");
+      const endLayer = document.getElementById("end-layer");
+      const bsodPct = document.getElementById("bsodPct");
+
+      let active = false;
+      let audioCtx = null;
+      let lastVol = 1;
+      let ids = [];
+      let screamIdx = 0;
+
+      function getVol() {
+        const val = parseFloat(volSlider.value);
+        return Number.isFinite(val) ? Math.max(0, Math.min(1, val)) : 1;
+      }
+
+      function syncVolIcon() {
+        const v = getVol();
+        muteBtn.textContent = v === 0 ? "🔇" : (v < 0.5 ? "🔉" : "🔊");
+      }
+
+      volSlider.addEventListener("input", () => {
+        const v = getVol();
+        if (v > 0) lastVol = v;
+        syncVolIcon();
+      });
+
+      muteBtn.addEventListener("click", () => {
+        volSlider.value = getVol() > 0 ? "0" : String(lastVol || 1);
+        syncVolIcon();
+      });
+
+      function unlockAudio() {
+        try {
+          if (!audioCtx) {
+            const AudioCtor = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtor) audioCtx = new AudioCtor();
+          }
+          if (audioCtx && audioCtx.state === "suspended") {
+            audioCtx.resume().catch(() => {});
+          }
+        } catch (e) {}
+      }
+
+      function playGlitch(freq, dur) {
+        const v = getVol();
+        if (v <= 0 || !audioCtx) return;
+        try {
+          const now = audioCtx.currentTime;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = "sawtooth";
+          osc.frequency.setValueAtTime(freq, now);
+          gain.gain.setValueAtTime(0.18 * v, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + dur);
+        } catch (e) {}
+      }
+
+      // Несколько разных криков людей
+      function playHumanScream(dur, mode) {
+        const v = getVol();
+        if (v <= 0 || !audioCtx) return;
+        try {
+          const now = audioCtx.currentTime;
+          const master = audioCtx.createGain();
+          master.gain.setValueAtTime(0.02, now);
+          master.gain.linearRampToValueAtTime(0.85 * v, now + 0.03);
+          master.gain.exponentialRampToValueAtTime(0.001, now + dur);
+          master.connect(audioCtx.destination);
+
+          const sets = [
+            [720, 1150, 1750, 2450], // высокий крик
+            [280, 520, 940, 1480],  // хриплый низкий крик
+            [610, 960, 1420, 2120]  // резкий вскрик
+          ];
+          const freqs = sets[mode % sets.length];
+
+          freqs.forEach((base, i) => {
+            const osc = audioCtx.createOscillator();
+            osc.type = i % 2 === 0 ? "sawtooth" : "square";
+            osc.frequency.setValueAtTime(base * 0.75, now);
+            osc.frequency.exponentialRampToValueAtTime(base * 1.45, now + 0.14);
+            osc.frequency.exponentialRampToValueAtTime(base * 0.58, now + dur);
+
+            const lfo = audioCtx.createOscillator();
+            const lfoG = audioCtx.createGain();
+            lfo.frequency.setValueAtTime(34 + mode * 8, now);
+            lfoG.gain.setValueAtTime(45, now);
+            lfo.connect(lfoG);
+            lfoG.connect(osc.frequency);
+
+            osc.connect(master);
+            lfo.start(now);
+            osc.start(now);
+            lfo.stop(now + dur);
+            osc.stop(now + dur);
+          });
+
+          // Шум надрыва голоса
+          const len = Math.max(1, Math.floor(audioCtx.sampleRate * Math.min(dur, 2)));
+          const buf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+          const ch = buf.getChannelData(0);
+          for (let i = 0; i < len; i++) ch[i] = Math.random() * 2 - 1;
+
+          const noise = audioCtx.createBufferSource();
+          noise.buffer = buf;
+          const nGain = audioCtx.createGain();
+          nGain.gain.setValueAtTime(0.35 * v, now);
+          noise.connect(nGain);
+          nGain.connect(master);
+          noise.start(now);
+          noise.stop(now + dur);
+        } catch (e) {}
+      }
+
+      // Нарисовка жуткого лица в темноте
+      function renderCreepyPortrait(mode) {
+        try {
+          const w = scareCanvas.width = Math.max(320, window.innerWidth || 360);
+          const h = scareCanvas.height = Math.max(480, window.innerHeight || 640);
+          const ctx = scareCanvas.getContext("2d");
+          if (!ctx) return;
+
+          const cx = w * 0.5;
+          const cy = h * 0.46;
+          const s = Math.min(w / 400, h / 700) * (mode === 1 ? 1.12 : 1.0);
+
+          ctx.fillStyle = "#040404";
+          ctx.fillRect(0, 0, w, h);
+
+          const glow = ctx.createRadialGradient(cx, cy - 20 * s, 10 * s, cx, cy, 240 * s);
+          glow.addColorStop(0, "#2b231c");
+          glow.addColorStop(1, "#000000");
+          ctx.fillStyle = glow;
+          ctx.fillRect(0, 0, w, h);
+
+          ctx.save();
+          ctx.translate(cx, cy);
+          ctx.scale(s, s);
+
+          // Тёмные волосы
+          ctx.fillStyle = "#050505";
+          ctx.beginPath();
+          ctx.moveTo(-140, 320);
+          ctx.quadraticCurveTo(-175, -90, -80, -210);
+          ctx.quadraticCurveTo(0, -270, 80, -210);
+          ctx.quadraticCurveTo(175, -90, 140, 320);
+          ctx.closePath();
+          ctx.fill();
+
+          // Бледно-серое вытянутое лицо
+          const face = ctx.createRadialGradient(0, -30, 12, 0, 20, 175);
+          face.addColorStop(0, "#756e6d");
+          face.addColorStop(0.6, "#3c3738");
+          face.addColorStop(1, "#090808");
+          ctx.fillStyle = face;
+          ctx.beginPath();
+          ctx.moveTo(-88, -60);
+          ctx.bezierCurveTo(-92, -170, 92, -170, 88, -60);
+          ctx.bezierCurveTo(95, 50, 68, 145, 24, 190);
+          ctx.quadraticCurveTo(0, 210, -24, 190);
+          ctx.bezierCurveTo(-68, 145, -95, 50, -88, -60);
+          ctx.closePath();
+          ctx.fill();
+
+          // Чёрные глазницы и белки глаз с точками-зрачками
+          const eyes = [-45, 50];
+          eyes.forEach((ex, idx) => {
+            ctx.fillStyle = "#000000";
+            ctx.beginPath();
+            ctx.ellipse(ex, -35, 44, 34, idx === 0 ? -0.15 : 0.15, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = "#dad6d2";
+            ctx.beginPath();
+            ctx.ellipse(ex, -35, 22, 15, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = "#050505";
+            ctx.beginPath();
+            ctx.arc(ex + (idx === 0 ? 3 : -3), -35, 4.2, 0, Math.PI * 2);
+            ctx.fill();
+          });
+
+          // Ноздри и тёмная пасть
+          ctx.fillStyle = "#070606";
+          ctx.beginPath();
+          ctx.ellipse(-6, 36, 5, 8, -0.2, 0, Math.PI * 2);
+          ctx.ellipse(11, 36, 5, 8, 0.2, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = "#050404";
+          ctx.beginPath();
+          ctx.moveTo(-60, 72);
+          ctx.quadraticCurveTo(4, 108, 64, 66);
+          ctx.bezierCurveTo(50, 142, 2, 152, -48, 132);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.restore();
+        } catch (e) {}
+      }
+
+      window.addEventListener("beforeunload", (e) => {
+        if (active) {
+          e.preventDefault();
+          e.returnValue = "";
+        }
+      });
+
+      window.addEventListener("popstate", () => {
+        if (active) {
+          try { history.pushState(null, "", location.href); } catch (e) {}
+          triggerScare(1100);
+        }
+      });
+
+      openBtn.addEventListener("click", () => {
+        unlockAudio();
+        modalBg.style.display = "flex";
+      });
+
+      cancelBtn.addEventListener("click", () => {
+        modalBg.style.display = "none";
+      });
+
+      function spawnErr() {
+        const d = document.createElement("div");
+        d.className = "mini-err";
+        const maxX = Math.max(10, (window.innerWidth || 360) - 240);
+        const maxY = Math.max(10, (window.innerHeight || 640) - 100);
+        d.style.left = Math.floor(Math.random() * maxX) + "px";
+        d.style.top = Math.floor(Math.random() * maxY) + "px";
+        d.innerHTML = '<div class="mini-err-top">ERROR</div><div class="mini-err-body">❌ Сбой выдачи робуксов!</div>';
+        redLayer.appendChild(d);
+      }
+
+      function triggerScare(ms) {
+        const idx = screamIdx % 3;
+        screamIdx++;
+        soundBox.style.display = "none";
+        renderCreepyPortrait(idx);
+        screamerLayer.style.display = "flex";
+        playHumanScream(ms / 1000, idx);
+        try {
+          if (navigator.vibrate) navigator.vibrate([250, 70, 350]);
+        } catch (e) {}
+        ids.push(setTimeout(() => {
+          screamerLayer.style.display = "none";
+          soundBox.style.display = "flex";
+        }, ms));
+      }
+
+      confirmBtn.addEventListener("click", () => {
+        ids.forEach((x) => { clearTimeout(x); clearInterval(x); });
+        ids = [];
+        redLayer.querySelectorAll(".mini-err").forEach((n) => n.remove());
+
+        modalBg.style.display = "none";
+        redLayer.style.display = "block";
+        netLayer.style.display = "none";
+        bsodLayer.style.display = "none";
+        screamerLayer.style.display = "none";
+        endLayer.style.display = "none";
+        codeDump.textContent = "";
+
+        active = true;
+        unlockAudio();
+        try { history.pushState(null, "", location.href); } catch (e) {}
+
+        ids.push(setInterval(() => {
+          codeDump.textContent += "ERR_0xFF " + Math.random().toString(36).slice(2) + " ";
+          if (codeDump.textContent.length > 3500) {
+            codeDump.textContent = codeDump.textContent.slice(1000);
+          }
+        }, 45));
+
+        ids.push(setInterval(() => {
+          spawnErr();
+          playGlitch(110 + Math.random() * 340, 0.08);
+        }, 420));
+
+        ids.push(setTimeout(() => triggerScare(1300), 1700));
+        ids.push(setTimeout(() => { netLayer.style.display = "block"; playGlitch(85, 0.3); }, 4000));
+        ids.push(setTimeout(() => { netLayer.style.display = "none"; triggerScare(1500); }, 6400));
+        ids.push(setTimeout(() => {
+          redLayer.style.display = "none";
+          bsodLayer.style.display = "block";
+          let p = 0;
+          const pi = setInterval(() => {
+            p = Math.min(100, p + 25);
+            bsodPct.textContent = "Завершено: " + p + "%";
+            if (p === 100) clearInterval(pi);
+          }, 350);
+          ids.push(pi);
+        }, 9000));
+
+        ids.push(setTimeout(() => {
+          ids.forEach((x) => { clearTimeout(x); clearInterval(x); });
+          ids = [];
+          active = false;
+          bsodLayer.style.display = "none";
+          screamerLayer.style.display = "none";
+          soundBox.style.display = "flex";
+          endLayer.style.display = "flex";
+        }, 12200));
+      });
+    })();
+  </script>
+</body>
+</html>
