@@ -164,10 +164,16 @@
     #screamer-media {
       width: 100vw;
       height: 100vh;
-      object-fit: cover;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    #screamer-media img {
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      display: block;
     }
 
     #net-layer { background: #fff; color: #444; z-index: 700; padding: 60px 24px; }
@@ -212,65 +218,10 @@
     <div id="err-big">ERROR</div>
   </div>
 
-  <!-- СКРИМЕР (точный образ с фото: бледное лицо в темноте, черные волосы, огромные белые глаза и темная пасть) -->
+  <!-- СКРИМЕР С КАРТИНКОЙ scare.jpg -->
   <div class="layer" id="screamer-layer">
     <div id="screamer-media">
-      <svg viewBox="0 0 400 600" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <radialGradient id="bgDark" cx="50%" cy="42%" r="60%">
-            <stop offset="0%" stop-color="#221f1c"/>
-            <stop offset="65%" stop-color="#090808"/>
-            <stop offset="100%" stop-color="#000000"/>
-          </radialGradient>
-          <radialGradient id="skinShade" cx="50%" cy="42%" r="48%">
-            <stop offset="0%" stop-color="#6b6463"/>
-            <stop offset="55%" stop-color="#3c3738"/>
-            <stop offset="88%" stop-color="#141213"/>
-            <stop offset="100%" stop-color="#050505"/>
-          </radialGradient>
-          <radialGradient id="eyeSocket" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#000000"/>
-            <stop offset="65%" stop-color="#0a090a"/>
-            <stop offset="100%" stop-color="rgba(10,9,10,0)"/>
-          </radialGradient>
-          <filter id="creepyBlur" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="5" />
-          </filter>
-          <filter id="softBlur" x="-10%" y="-10%" width="120%" height="120%">
-            <feGaussianBlur stdDeviation="2.2" />
-          </filter>
-        </defs>
-
-        <!-- Темный фон -->
-        <rect width="400" height="600" fill="url(#bgDark)" />
-
-        <!-- Черные растрепанные волосы вокруг лица -->
-        <path d="M55 580 C30 420, 15 240, 65 115 C105 25, 295 25, 335 115 C385 240, 370 420, 345 580 Z" fill="#040404" filter="url(#creepyBlur)" />
-
-        <!-- Вытянутое бледно-серое лицо -->
-        <path d="M105 160 C110 85, 290 85, 295 160 C302 250, 285 350, 245 415 C220 455, 180 455, 155 415 C115 350, 98 250, 105 160 Z" fill="url(#skinShade)" filter="url(#softBlur)" />
-
-        <!-- Глубокие черные провалы вокруг глаз -->
-        <ellipse cx="145" cy="225" rx="46" ry="38" fill="url(#eyeSocket)" filter="url(#creepyBlur)" />
-        <ellipse cx="258" cy="215" rx="46" ry="38" fill="url(#eyeSocket)" filter="url(#creepyBlur)" />
-
-        <!-- Широко распахнутые белые глаза -->
-        <ellipse cx="146" cy="224" rx="23" ry="17" fill="#d9d5d2" filter="url(#softBlur)" />
-        <ellipse cx="257" cy="214" rx="23" ry="17" fill="#d9d5d2" filter="url(#softBlur)" />
-
-        <!-- Мелкие жуткие зрачки -->
-        <circle cx="148" cy="223" r="4.2" fill="#080808" />
-        <circle cx="255" cy="213" r="4.2" fill="#080808" />
-
-        <!-- Нос и черные ноздри -->
-        <path d="M198 210 L190 285 L212 285 Z" fill="#4f4848" opacity="0.55" filter="url(#creepyBlur)" />
-        <ellipse cx="192" cy="288" rx="6" ry="9" transform="rotate(-15 192 288)" fill="#070606" filter="url(#softBlur)" />
-        <ellipse cx="211" cy="287" rx="6" ry="9" transform="rotate(15 211 287)" fill="#070606" filter="url(#softBlur)" />
-
-        <!-- Кривая темная жуткая улыбка / открытый рот -->
-        <path d="M132 325 Q202 365 272 318 Q255 395 200 402 Q145 395 132 325 Z" fill="#060505" filter="url(#creepyBlur)" />
-        <path d="M138 328 Q202 362 266 322" stroke="#1a1515" stroke-width="5" fill="none" filter="url(#softBlur)" />
-      </svg>
+      <img src="scare.jpg" alt="" />
     </div>
   </div>
 
@@ -338,7 +289,6 @@
       } catch (e) {}
     }
 
-    // Треск и звуки сбоев
     function beep(freq, dur) {
       const v = vol();
       if (v <= 0 || !audioCtx) return;
@@ -357,14 +307,12 @@
       } catch (e) {}
     }
 
-    // ОЧЕНЬ ГРОМКИЙ ДУШЕРАЗДИРАЮЩИЙ КРИК
     function bloodCurdlingScream(dur) {
       const v = vol();
       if (v <= 0 || !audioCtx) return;
       try {
         const now = audioCtx.currentTime;
 
-        // Компрессор на максимум, чтобы крик звучал максимально плотно и громко
         const compressor = audioCtx.createDynamicsCompressor();
         compressor.threshold.setValueAtTime(-12, now);
         compressor.knee.setValueAtTime(10, now);
@@ -372,7 +320,6 @@
         compressor.attack.setValueAtTime(0.005, now);
         compressor.release.setValueAtTime(0.15, now);
 
-        // Жесткий дисторшн (хрип голосовых связок)
         const shaper = audioCtx.createWaveShaper();
         const samples = 44100;
         const curve = new Float32Array(samples);
@@ -384,7 +331,7 @@
 
         const master = audioCtx.createGain();
         master.gain.setValueAtTime(0.05, now);
-        master.gain.linearRampToValueAtTime(0.95 * v, now + 0.03); // Резкий удар по ушам
+        master.gain.linearRampToValueAtTime(0.95 * v, now + 0.03);
         master.gain.setValueAtTime(0.9 * v, now + dur - 0.15);
         master.gain.exponentialRampToValueAtTime(0.001, now + dur);
 
@@ -392,19 +339,16 @@
         compressor.connect(master);
         master.connect(audioCtx.destination);
 
-        // 1. Визжащие женские/демонические форманты
         const screamFreqs = [680, 1040, 1520, 2280, 3100];
         screamFreqs.forEach((base, idx) => {
           const osc = audioCtx.createOscillator();
           osc.type = idx % 2 === 0 ? "sawtooth" : "square";
 
-          // Резкий взлет визга и срыв голоса вниз
           osc.frequency.setValueAtTime(base * 0.72, now);
           osc.frequency.exponentialRampToValueAtTime(base * 1.48, now + 0.14);
           osc.frequency.linearRampToValueAtTime(base * 1.25, now + dur * 0.6);
           osc.frequency.exponentialRampToValueAtTime(base * 0.55, now + dur);
 
-          // Бешеная дрожь голоса (вибрато)
           const lfo = audioCtx.createOscillator();
           const lfoGain = audioCtx.createGain();
           lfo.frequency.setValueAtTime(42, now);
@@ -419,7 +363,6 @@
           osc.stop(now + dur);
         });
 
-        // 2. Шипящий шум дыхания/крика
         const bufferSize = Math.floor(audioCtx.sampleRate * dur);
         const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
         const data = noiseBuffer.getChannelData(0);
@@ -445,7 +388,6 @@
       } catch (e) {}
     }
 
-    // Блокировка выхода, кнопки "Назад" и клавиш во время пранка
     window.addEventListener("beforeunload", (e) => {
       if (active) {
         e.preventDefault();
@@ -457,7 +399,7 @@
     window.addEventListener("popstate", () => {
       if (active) {
         history.pushState(null, "", location.href);
-        runScreamer(1100); // Если нажал "Назад" на телефоне — получает скример!
+        runScreamer(1100);
       }
     });
 
@@ -507,7 +449,7 @@
     }
 
     function runScreamer(ms) {
-      soundBox.style.display = "none"; // Прячем ползунок громкости во время скримера
+      soundBox.style.display = "none";
       screamerLayer.style.display = "flex";
       bloodCurdlingScream(ms / 1000);
       if (navigator.vibrate) {
@@ -523,7 +465,6 @@
       initAudio();
       active = true;
 
-      // Ловушка для кнопки "Назад" в браузере телефона
       history.pushState(null, "", location.href);
 
       if (document.documentElement.requestFullscreen) {
@@ -536,4 +477,54 @@
 
       ids.push(setInterval(() => {
         codeDump.textContent += "FATAL_BREACH_0x99F " + Math.random().toString(36).slice(2) + " ";
-        if (codeDump.textContent.length > 4000) codeDump.te
+        if (codeDump.textContent.length > 4000) codeDump.textContent = codeDump.textContent.slice(1200);
+      }, 40));
+
+      ids.push(setInterval(() => {
+        addMiniErr();
+        beep(100 + Math.random() * 420, 0.08);
+        if (Math.random() > 0.5) redLayer.classList.toggle("invert-screen");
+      }, 380));
+
+      ids.push(setTimeout(() => runScreamer(1400), 1800));
+
+      ids.push(setTimeout(() => {
+        netLayer.style.display = "block";
+        beep(75, 0.35);
+      }, 4200));
+
+      ids.push(setTimeout(() => {
+        netLayer.style.display = "none";
+        runScreamer(1700);
+      }, 6800));
+
+      ids.push(setTimeout(() => {
+        redLayer.classList.remove("invert-screen");
+        redLayer.style.display = "none";
+        bsodLayer.style.display = "block";
+        beep(55, 0.6);
+        let p = 0;
+        const pi = setInterval(() => {
+          p = Math.min(100, p + 25);
+          bsodPct.textContent = "Завершено: " + p + "%";
+          if (p === 100) clearInterval(pi);
+        }, 350);
+        ids.push(pi);
+      }, 9500));
+
+      ids.push(setTimeout(() => {
+        ids.forEach((x) => { clearTimeout(x); clearInterval(x); });
+        ids = [];
+        active = false;
+        bsodLayer.style.display = "none";
+        screamerLayer.style.display = "none";
+        soundBox.style.display = "flex";
+        endLayer.style.display = "flex";
+        if (document.fullscreenElement && document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        }
+      }, 13000));
+    });
+  </script>
+</body>
+</html>
