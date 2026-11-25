@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free Robux</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: #12151a;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+    .sound-box {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 9999;
+      background: #1e232b;
+      border: 1px solid #3a4250;
+      border-radius: 20px;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sound-box button {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .card {
+      width: 100%;
+      max-width: 380px;
+      background: #1c2028;
+      border: 1px solid #2f3642;
+      border-radius: 16px;
+      padding: 28px 20px;
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+    .card h1 { font-size: 24px; margin: 10px 0; }
+    .card p { color: #b5bdc9; font-size: 14px; margin-bottom: 20px; }
+    .btn-main {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff;
+      background: #0074e4;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-box {
+      width: 100%;
+      max-width: 340px;
+      background: #232832;
+      border: 1px solid #3c4452;
+      border-radius: 12px;
+      padding: 22px;
+      text-align: center;
+    }
+    .modal-box p { color: #d0d7e2; margin: 10px 0 20px; font-size: 14px; }
+    .row { display: flex; gap: 10px; }
+    .btn-ok { flex: 1; padding: 11px; background: #00b06f; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    .btn-cancel { flex: 1; padding: 11px; background: #464e5c; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+
+    .layer { display: none; position: fixed; inset: 0; overflow: hidden; }
+    #red-layer { background: #1d0000; z-index: 500; }
+    #code-dump {
+      position: absolute; inset: 0; padding: 10px;
+      font-family: monospace; font-size: 12px; color: rgba(255, 80, 80, 0.55);
+      word-break: break-all;
+    }
+    #err-big {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      font-family: monospace; font-size: 64px; font-weight: 900; color: #fff;
+      text-shadow: 0 0 20px #f00, 4px 4px 0 #800; z-index: 510;
+    }
+    .mini-err {
+      position: absolute; width: 220px; background: #e6e6e6; color: #111;
+      border: 2px solid #fff; box-shadow: 4px 4px 12px rgba(0,0,0,0.7);
+      font-size: 12px; z-index: 520;
+    }
+    .mini-err-top { background: #b30000; color: #fff; padding: 4px 8px; font-weight: bold; }
+    .mini-err-body { padding: 10px; }
+
+    #screamer-layer {
+      background: #000; z-index: 900;
+      align-items: center; justify-content: center;
+    }
+    #net-layer { background: #fff; color: #444; z-index: 700; padding: 50px 20px; }
+    #bsod-layer { background: #0078d7; color: #fff; z-index: 800; padding: 50px 20px; }
+    #end-layer {
+      background: #0b0d10; color: #fff; z-index: 1000;
+      flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="sound-box">
+    <button id="muteBtn" type="button">🔊</button>
+    <input id="volSlider" type="range" min="0" max="1" step="0.05" value="0.6" />
+  </div>
+
+  <div class="card" id="startCard">
+    <div style="font-size:48px;">💎</div>
+    <h1>ФРИ РОБУКСЫ</h1>
+    <p>Нажмите кнопку, чтобы запустить выдачу робуксов.</p>
+    <button class="btn-main" id="openBtn" type="button">ПОЛУЧИТЬ РОБУКСЫ</button>
+  </div>
+
+  <div class="modal-bg" id="modalBg">
+    <div class="modal-box">
+      <h3>Подтверждение</h3>
+      <p>Подтвердить запуск получения робуксов?</p>
+      <div class="row">
+        <button class="btn-ok" id="confirmBtn" type="button">Подтвердить</button>
+        <button class="btn-cancel" id="cancelBtn" type="button">Отменить</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="layer" id="red-layer">
+    <div id="code-dump"></div>
+    <div id="err-big">ERROR</div>
+  </div>
+
+  <div class="layer" id="screamer-layer">
+    <svg width="260" height="260" viewBox="0 0 200 200">
+      <ellipse cx="100" cy="102" rx="72" ry="88" fill="#ddd" />
+      <ellipse cx="68" cy="82" rx="18" ry="24" fill="#000" />
+      <ellipse cx="132" cy="82" rx="18" ry="24" fill="#000" />
+      <circle cx="68" cy="82" r="5" fill="#f00" />
+      <circle cx="132" cy="82" r="5" fill="#f00" />
+      <ellipse cx="100" cy="150" rx="32" ry="36" fill="#000" />
+      <rect x="74" y="128" width="52" height="8" fill="#fff" />
+      <rect x="76" y="162" width="48" height="8" fill="#fff" />
+    </svg>
+  </div>
+
+  <div class="layer" id="net-layer">
+    <h2>Нет подключения к Интернету</h2>
+    <p style="margin-top:8px;">ERR_INTERNET_DISCONNECTED</p>
+  </div>
+
+  <div class="layer" id="bsod-layer">
+    <div style="font-size:60px;margin-bottom:12px;">:(</div>
+    <p>Критическая ошибка отображения. Сбор данных...</p>
+    <p id="bsodPct" style="margin-top:12px;">Завершено: 0%</p>
+  </div>
+
+  <div class="layer" id="end-layer">
+    <h1 style="color:#ff3b3b;font-size:28px;margin-bottom:12px;">РОБУКСЫ УЖЕ У ВАС! 🤡</h1>
+    <p style="max-width:360px;line-height:1.5;">Это был визуальный пранк. Теперь можно спокойно закрыть вкладку.</p>
+  </div>
+
+  <script>
+    const openBtn = document.getElementById("openBtn");
+    const modalBg = document.getElementById("modalBg");
+    const confirmBtn = document.getElementById("confirmBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const muteBtn = document.getElementById("muteBtn");
+    const volSlider = document.getElementById("volSlider");
+
+    const redLayer = document.getElementById("red-layer");
+    const codeDump = document.getElementById("code-dump");
+    const screamerLayer = document.getElementById("screamer-layer");
+    const netLayer = document.getElementById("net-layer");
+    const bsodLayer = document.getElementById("bsod-layer");
+    const endLayer = document.getElementById("end-layer");
+    const bsodPct = document.getElementById("bsodPct");
+
+    let active = false;
+    let audioCtx = null;
+    let lastVol = 0.6;
+    let ids = [];
+
+    function vol() { return parseFloat(volSlider.value) || 0; }
+    function updateIcon() {
+      const v = vol();
+      muteBtn.textContent = v === 0 ? "🔇" : (v < 0.5 ? "🔉" : "🔊");
+    }
+    volSlider.addEventListener("input", () => {
+      if (vol() > 0) lastVol = vol();
+      updateIcon();
+    });
+    muteBtn.addEventListener("click", () => {
+      volSlider.value = vol() > 0 ? "0" : String(lastVol);
+      updateIcon();
+    });
+
+    function initAudio() {
+      try {
+        if (!audioCtx) {
+          const C = window.AudioContext || window.webkitAudioContext;
+          if (C) audioCtx = new C();
+        }
+        if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+      } catch (e) {}
+    }
+
+    function beep(freq, dur) {
+      const v = vol();
+      if (v <= 0 || !audioCtx) return;
+      try {
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(freq, now);
+        g.gain.setValueAtTime(0.14 * v, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + dur);
+        osc.connect(g); g.connect(audioCtx.destination);
+        osc.start(now); osc.stop(now + dur);
+      } catch (e) {}
+    }
+
+    function scream(dur) {
+      const v = vol();
+      if (v <= 0 || !audioCtx) return;
+      try {
+        const now = audioCtx.currentTime;
+        const g = audioCtx.createGain();
+        g.gain.setValueAtTime(0.01, now);
+        g.gain.linearRampToValueAtTime(0.35 * v, now + 0.05);
+        g.gain.exponentialRampToValueAtTime(0.001, now + dur);
+        g.connect(audioCtx.destination);
+
+        [560, 910, 1380].forEach((f, i) => {
+          const osc = audioCtx.createOscillator();
+          osc.type = i % 2 === 0 ? "sawtooth" : "square";
+          osc.frequency.setValueAtTime(f * 0.8, now);
+          osc.frequency.exponentialRampToValueAtTime(f * 1.35, now + 0.15);
+          osc.frequency.exponentialRampToValueAtTime(f * 0.65, now + dur);
+          osc.connect(g);
+          osc.start(now); osc.stop(now + dur);
+        });
+      } catch (e) {}
+    }
+
+    window.addEventListener("beforeunload", (e) => {
+      if (active) { e.preventDefault(); e.returnValue = ""; }
+    });
+
+    openBtn.addEventListener("click", () => {
+      initAudio();
+      modalBg.style.display = "flex";
+    });
+    cancelBtn.addEventListener("click", () => {
+      modalBg.style.display = "none";
+    });
+
+    function addMiniErr() {
+      const d = document.createElement("div");
+      d.className = "mini-err";
+      d.style.left = Math.floor(Math.random() * Math.max(10, window.innerWidth - 235)) + "px";
+      d.style.top = Math.floor(Math.random() * Math.max(10, window.innerHeight - 100)) + "px";
+      d.innerHTML = '<div class="mini-err-top">Error</div><div class="mini-err-body">Сбой выдачи робуксов!</div>';
+      redLayer.appendChild(d);
+    }
+
+    function runScreamer(ms) {
+      screamerLayer.style.display = "flex";
+      scream(ms / 1000);
+      ids.push(setTimeout(() => { screamerLayer.style.display = "none"; }, ms));
+    }
+
+    confirmBtn.addEventListener("click", () => {
+      initAudio();
+      active = true;
+      modalBg.style.display = "none";
+      redLayer.style.display = "block";
+      codeDump.textContent = "";
+
+      ids.push(setInterval(() => {
+        codeDump.textContent += "ERROR_0xFF " + Math.random().toString(36).slice(2) + " ";
+        if (codeDump.textContent.length > 3500) codeDump.textContent = codeDump.textContent.slice(1000);
+      }, 50));
+
+      ids.push(setInterval(() => {
+        addMiniErr();
+        beep(120 + Math.random() * 300, 0.08);
+      }, 500));
+
+      ids.push(setTimeout(() => runScreamer(1000), 2200));
+      ids.push(setTimeout(() => { netLayer.style.display = "block"; beep(90, 0.25); }, 4500));
+      ids.push(setTimeout(() => { netLayer.style.display = "none"; runScreamer(1100); }, 7000));
+      ids.push(setTimeout(() => {
+        redLayer.style.display = "none";
+        bsodLayer.style.display = "block";
+        let p = 0;
+        const pi = setInterval(() => {
+          p = Math.min(100, p + 25);
+          bsodPct.textContent = "Завершено: " + p + "%";
+          if (p === 100) clearInterval(pi);
+        }, 350);
+        ids.push(pi);
+      }, 9500));
+      ids.push(setTimeout(() => {
+        ids.forEach((x) => { clearTimeout(x); clearInterval(x); });
+        ids = [];
+        active = false;
+        bsodLayer.style.display = "none";
+        endLayer.style.display = "flex";
+      }, 12500));
+    });
+  </script>
+</body>
+</html>
