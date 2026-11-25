@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Free Robux Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100dvh;
+            background-color: #111315;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .page-wrap {
+            width: 100%;
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Панель звука сверху справа */
+        #sound-bar {
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            background: rgba(24, 27, 32, 0.95);
+            border: 1px solid #3c424c;
+            padding: 8px 12px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 9999;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+        }
+
+        #mute-btn {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        #volume-slider {
+            width: 85px;
+            cursor: pointer;
+            accent-color: #ff2b2b;
+        }
+
+        /* Стартовая карточка */
+        #start-screen {
+            width: 100%;
+            max-width: 420px;
+            background: #1b1e24;
+            border: 1px solid #2e343e;
+            border-radius: 18px;
+            padding: 32px 24px;
+            text-align: center;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65);
+            z-index: 10;
+        }
+
+        .gem {
+            font-size: 56px;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        #start-screen h1 {
+            font-size: 26px;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+
+        #start-screen p {
+            color: #aeb5bf;
+            font-size: 15px;
+            margin-bottom: 24px;
+            line-height: 1.45;
+        }
+
+        .btn-blue {
+            width: 100%;
+            background: #0074e4;
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 20px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(0, 116, 228, 0.35);
+        }
+
+        .btn-blue:active {
+            transform: scale(0.98);
+            background: #005bb5;
+        }
+
+        /* Модальное окно Подтвердить / Отменить */
+        #confirm-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.82);
+            z-index: 500;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-card {
+            width: 100%;
+            max-width: 360px;
+            background: #22262e;
+            border: 1px solid #3b414d;
+            border-radius: 14px;
+            padding: 24px 20px;
+            text-align: center;
+        }
+
+        .modal-card h2 {
+            font-size: 21px;
+            margin-bottom: 10px;
+        }
+
+        .modal-card p {
+            color: #c4cbd4;
+            font-size: 14px;
+            margin-bottom: 22px;
+            line-height: 1.45;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-yes {
+            flex: 1;
+            background: #00b06f;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-no {
+            flex: 1;
+            background: #444a54;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Экран глюков / кода / ERROR */
+        #glitch-screen {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #1b0000;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        #code-bg {
+            position: absolute;
+            inset: 0;
+            padding: 10px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 12px;
+            line-height: 1.35;
+            color: rgba(255, 70, 70, 0.55);
+            word-break: break-all;
+            overflow: hidden;
+        }
+
+        #error-title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: "Courier New", Courier, monospace;
+            font-size: clamp(44px, 14vw, 120px);
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: 0 0 18px #ff0000, 0 0 36px #ff0000, 4px 4px 0 #8a0000;
+
+      
